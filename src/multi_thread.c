@@ -320,14 +320,15 @@ int main(int argC, char *argV[])
         thread_count = strtol(argV[1], NULL, 10);
         initiateSystem(argV[2]);
 
-        fprintf(fp, "Body,x,y,vx,vy\n");
+        fprintf(fp, "Body,mass,x,y,vx,vy\n");
         for (i = 0; i < timeSteps; i++)
         {
             // printf("\nCycle %d\n", i + 1);
             simulate();
             for (j = 0; j < bodies; j++)
-                fprintf(fp, "%d,%lf,%lf,%lf,%lf\n", 
+                fprintf(fp, "%d,%lf,%lf,%lf,%lf,%lf\n", 
                     j + 1, 
+                    masses[j],
                     positions[j].x, 
                     positions[j].y, 
                     velocities[j].x, 
