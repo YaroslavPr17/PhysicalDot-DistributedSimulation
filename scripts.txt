@@ -1,0 +1,5 @@
+gcc src/multi_thread.c -o ./out/multi_run -lm
+./out/multi_run 1 ./data/input/input4 ./data/output/output4
+
+gcc src/generator.c -o ./out/gen_run; ./out/gen_run 10 20
+
