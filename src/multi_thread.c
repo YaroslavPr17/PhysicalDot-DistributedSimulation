@@ -93,49 +93,6 @@ void resolveCollisions()
         }
 }
 
-// void computeAccelerations()
-// {
-//     long i, j;
-
-//     for (i = 0; i < bodies; i++)
-//     {
-//         for (j = 0; j < bodies; j++)
-//         {
-//             if (i < j)   // Верхняя часть 
-//             {
-//                 acc_table[i][j] =
-//                     scaleVector(
-//                         GravConstant * masses[j] / pow(
-//                             mod(subtractVectors(positions[i], positions[j])), 
-//                             3), 
-//                         subtractVectors(positions[j], positions[i]));
-//             }
-//             else if(i > j){
-//                 acc_table[i][j] = scaleVector(-1, acc_table[j][i]);
-//             }
-//         }
-//     }
-
-//     for (i = 0; i < bodies; ++i)
-//     {
-//         accelerations[i].x = 0;
-//         accelerations[i].y = 0;
-
-//         for (j = 0; j < bodies; ++j)
-//         {
-//             if (i != j)
-//                 accelerations[i] = addVectors(accelerations[i], acc_table[i][j]);
-//         }
-//     }
-
-//     // for (i = 0; i < bodies; i++)
-//     // {
-//     //     printf("(%15.13lf, %15.13lf)\t", accelerations[i].x, accelerations[i].y);
-//     // }
-//     // printf("\n");
-// }
-
-
 
 void* computeAccelerationsRoutine(void* rank){
     long thread_n = (long) rank;
@@ -171,7 +128,7 @@ void* computeAccelerationsRoutine(void* rank){
 }
 
 
-void computeAccelerations(){
+void computeAccelerationsSingle(){
     pthread_t* thread_handles = NULL;
     thread_handles = malloc(thread_count * sizeof(pthread_t));
     
@@ -198,6 +155,53 @@ void computeAccelerations(){
 }
 
 
+void* sumAccelerationsRoutine(void* rank){
+    long thread_n = (long) rank;
+    long batch_size = bodies / thread_count;
+    long start = batch_size * thread_n;
+    long finish = start + batch_size;    
+
+    long i, j;
+
+    for (i = start; i < finish; i++)
+    {
+        accelerations[i].x = 0;
+        accelerations[i].y = 0;        
+        for (j = 0; j < bodies; j++)
+        {
+            if (i != j)
+                accelerations[i] = addVectors(accelerations[i], acc_table[i][j]);
+        }
+    }
+
+    return NULL;
+}
+
+
+
+void computeAccelerationsMulti(){
+    pthread_t* thread_handles = NULL;
+    thread_handles = malloc(thread_count * sizeof(pthread_t));
+    
+    for (long i = 0; i < thread_count; ++i ) {
+        pthread_create(&thread_handles[i], NULL, computeAccelerationsRoutine, (void*) i);
+    }
+    for (long i = 0; i < thread_count; ++i) {
+        pthread_join(thread_handles[i], NULL);
+    }
+
+    // Other thread usage
+    for (long i = 0; i < thread_count; ++i ) {
+        pthread_create(&thread_handles[i], NULL, sumAccelerationsRoutine, (void*) i);
+    }
+    for (long i = 0; i < thread_count; ++i) {
+        pthread_join(thread_handles[i], NULL);
+    }
+
+    free(thread_handles);
+}
+
+
 
 
 void computeVelocities()
@@ -221,7 +225,7 @@ void computePositions()
 
 void simulate()
 {
-    computeAccelerations();
+    computeAccelerationsMulti();
     computePositions();
     computeVelocities();
     resolveCollisions();
