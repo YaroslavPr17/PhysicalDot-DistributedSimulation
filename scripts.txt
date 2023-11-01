@@ -3,3 +3,4 @@ gcc src/multi_thread.c -o ./out/multi_run -lm
 
 gcc src/generator.c -o ./out/gen_run; ./out/gen_run 10 20
 
+./data/output/gen_output30.csv

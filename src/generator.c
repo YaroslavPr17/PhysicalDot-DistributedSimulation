@@ -14,16 +14,10 @@ int main(int argc, char** argv){
     char temp[128] = "./data/input/gen_input";
     char temp1[32];
 
-    printf("TEMP: %s\n", temp);
+    printf("---> %ld bodies will be generated to be modelled for %ld time-steps.\n", n_bodies , n_steps);
 
     sprintf(temp1, "%ld", n_bodies);
-
-    printf("TEMP1: %s\n", temp1);
-
     strcat(temp, temp1);
-
-    printf("TEMP: %s;\n", temp);
-
 
     FILE *fp = fopen(temp, "w");
 
@@ -32,16 +26,14 @@ int main(int argc, char** argv){
         return 0;
     }
 
-    printf("FILE: %p\n", fp);
-
     fprintf(fp, "%s %ld %ld\n", "6.6743e-11", n_bodies, n_steps);
 
     for (long i = 0; i < n_bodies; ++i){
-        int val = rand() % 10000 + 1000;
+        int val = rand() % 200 + 50;
         fprintf(fp, "%d\n", val);
 
         fprintf(fp, "%d %d\n", rand() % 100, rand() % 100);
-        fprintf(fp, "%d %d\n", rand() % 10, rand() % 10);
+        fprintf(fp, "%d %d\n", rand() % 50 + 50, rand() % 50 + 50);
     }
 
     return 0;

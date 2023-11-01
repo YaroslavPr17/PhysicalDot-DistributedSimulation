@@ -3,6 +3,8 @@
 #include <math.h>
 #include <pthread.h>
 #include <float.h>
+#include <string.h>
+
 
 #define DT 0.05
 #define EPS 10e-32
@@ -315,8 +317,12 @@ int main(int argC, char *argV[])
         printf("Usage : %s <file name containing system configuration data>", argV[0]);
     else
     {
+        char filename[128];
+        strcpy(filename, argV[3]);
+        strcat(filename, ".csv");
 
-        FILE *fp = fopen(argV[3], "w");
+        FILE *fp = fopen(filename, "w");
+
         thread_count = strtol(argV[1], NULL, 10);
         initiateSystem(argV[2]);
 
