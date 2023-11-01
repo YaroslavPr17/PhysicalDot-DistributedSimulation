@@ -5,6 +5,9 @@
 #include <float.h>
 #include <string.h>
 
+#include "multi_thread.h"
+#include "timer.h"
+
 
 #define DT 0.05
 #define EPS 10e-32
@@ -50,10 +53,13 @@ double mod(vector a)
     return sqrt(a.x * a.x + a.y * a.y);
 }
 
-void initiateSystem(char *fileName)
+int initiateSystem(char *fileName)
 {
     long i;
     FILE *fp = fopen(fileName, "r");
+    if (fp == NULL){
+        return 1;
+    }
 
     fscanf(fp, "%lf%d%d", &GravConstant, &bodies, &timeSteps);
 
@@ -78,6 +84,20 @@ void initiateSystem(char *fileName)
     }
 
     fclose(fp);
+    return 0;
+}
+
+void removeSystem()
+{
+    free(masses);
+    free(positions);
+    free(velocities);
+    free(accelerations);
+
+    for (long i = 0; i < bodies; ++i){
+        free(acc_table[i]);
+    }
+    free(acc_table);
 }
 
 void resolveCollisions()
@@ -309,39 +329,46 @@ void simulate()
     resolveCollisions();
 }
 
-int main(int argC, char *argV[])
+double make_single_run(int n_threads, char* input_file, char* output_file)
 {
-    int i, j;
+    double start, end, overall_time = 0.0; 
 
-    if (argC != 4)
-        printf("Usage : %s <file name containing system configuration data>", argV[0]);
-    else
-    {
-        char filename[128];
-        strcpy(filename, argV[3]);
-        strcat(filename, ".csv");
-
-        FILE *fp = fopen(filename, "w");
-
-        thread_count = strtol(argV[1], NULL, 10);
-        initiateSystem(argV[2]);
-
-        fprintf(fp, "Body,mass,x,y,vx,vy\n");
-        for (i = 0; i < timeSteps; i++)
-        {
-            // printf("\nCycle %d\n", i + 1);
-            simulate();
-            for (j = 0; j < bodies; j++)
-                fprintf(fp, "%d,%lf,%lf,%lf,%lf,%lf\n", 
-                    j + 1, 
-                    masses[j],
-                    positions[j].x, 
-                    positions[j].y, 
-                    velocities[j].x, 
-                    velocities[j].y
-                );
-        }
+    thread_count = n_threads;
+    if (initiateSystem(input_file)){
+        printf("Error when opening input_file: '%s'.\n", input_file);
+        return overall_time;
     }
 
-    return 0;
+    FILE *fp = fopen(output_file, "w");
+    if (fp == NULL){
+        printf("Error when opening output_file; '%s'.\n", output_file);
+        return overall_time;
+    }
+
+    fprintf(fp, "Body,mass,x,y,vx,vy\n");
+
+    for (int i = 0; i < timeSteps; i++)
+    {   
+        GET_TIME(start);
+        simulate();
+        GET_TIME(end);
+
+        for (long j = 0; j < bodies; j++)
+            fprintf(fp, "%ld,%lf,%lf,%lf,%lf,%lf\n", 
+                j + 1, 
+                masses[j],
+                positions[j].x, 
+                positions[j].y, 
+                velocities[j].x, 
+                velocities[j].y
+            );
+
+        overall_time += end - start;        
+    }
+
+    fclose(fp);
+
+    removeSystem();
+
+    return overall_time;
 }
