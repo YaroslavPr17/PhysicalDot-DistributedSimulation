@@ -7,25 +7,24 @@ Original file is located at
     https://colab.research.google.com/drive/1wxm_xej5ZI5CVljEAnjU3V4Zjr03l3_u
 """
 
-!pip install celluloid
-
 from celluloid import Camera as Camera
 import matplotlib.pyplot as plt
 import pandas as pd
 from random import randint
 import re
+from tqdm import trange
 
 print("Введите путь до исходного файла:")
 input_dir = input()
 data = pd.read_csv(input_dir)
 start = input_dir.rfind('/')
-end = input_dir.find('.')
+end = input_dir.rfind('.')
 filename = input_dir[start + 1:end]
 num = int(re.findall(r'\d+',filename)[0])
 
 color = []
 for i in range(num):
-    color.append('#%06X' % randint(0, 0xFFFFFF))
+    color.append('#%06X' % randint(0, 0xDDDDDD))
 
 masses = data['mass'][:num]
 
@@ -37,10 +36,12 @@ ax1 = fig.add_subplot()
 ax1.set_title("Dot Simulation")
 ax1.grid(1)
 
-for i in range(0, len(data['x']), num):
+for i in trange(0, len(data['x']), num):
   ax1.scatter(x = data['x'][i:i+num], y = data['y'][i:i+num], s = masses, c = color)
   camera.snap()
 
+print('Animating...')
 animation = camera.animate()
-animation.save("/content/test1.mp4")
-
+print('Saving animation...')
+animation.save("./data/output/test1.avi")
+print('OK!')
