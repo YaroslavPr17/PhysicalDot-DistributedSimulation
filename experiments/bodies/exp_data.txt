@@ -1,0 +1,3 @@
+n_bodies,n_threads,n_retries,mean_comp_time,hyper_threading
+1000,12,1,4.901776,True
+1000,12,1,4.905802965164,True
