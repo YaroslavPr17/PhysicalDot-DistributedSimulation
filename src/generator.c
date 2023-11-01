@@ -18,6 +18,7 @@ int main(int argc, char** argv){
 
     sprintf(temp1, "%ld", n_bodies);
     strcat(temp, temp1);
+    strcat(temp, ".txt");
 
     FILE *fp = fopen(temp, "w");
 
