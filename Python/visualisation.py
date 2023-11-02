@@ -40,8 +40,10 @@ for i in trange(0, len(data['x']), num):
   ax1.scatter(x = data['x'][i:i+num], y = data['y'][i:i+num], s = masses, c = color)
   camera.snap()
 
+output_dir = "./data/output/vis_output" + str(num) + ".avi"
+
 print('Animating...')
 animation = camera.animate()
 print('Saving animation...')
-animation.save("./data/output/test1.avi")
+animation.save(output_dir)
 print('OK!')
