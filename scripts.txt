@@ -5,6 +5,6 @@ gcc src/generator.c -o ./out/gen_run; ./out/gen_run 10 20
 
 ./data/output/gen_output30.csv
 
-gcc src/test_unit.c -o ./out/test_unit_run; ./out/test_unit_run 12 1000 True 1
+gcc src/multi_thread.c -lm src/test_unit.c -o ./out/test_unit_run; ./out/test_unit_run 4 100 True 1
 
 n_bodies,n_threads,n_retries,mean_comp_time,hyper_threading
