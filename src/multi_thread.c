@@ -36,7 +36,7 @@ sem_t* sems;
 int sval;
 int n_finished = 0;
 
-pthread_mutex_t mutex;
+pthread_mutex_t mutex_mini;
 
 
 
@@ -110,10 +110,10 @@ int initiateSystem(char *fileName)
 
     sems = (sem_t*) malloc(thread_count * sizeof(sem_t));
     for (i = 0; i < thread_count; ++i){
-        sem_init(&sems[i], 0, 1);
+        sem_init(&sems[i], 0, 0);
     }
 
-    pthread_mutex_init (&mutex, NULL);
+    pthread_mutex_init (&mutex_mini, NULL);
 
     for (i = 0; i < bodies; i++)
     {
@@ -295,7 +295,6 @@ void* simulate(void* rank)
 {
     for (int i = 0; i < timeSteps; i++)
     {
-        printf("-------------------------------------\nTIME_STEP %d\n", i);
         long thread_n = (long) rank;
         long batch_size = bodies / thread_count;
         long start = batch_size * thread_n;
@@ -308,7 +307,6 @@ void* simulate(void* rank)
 
 
 
-
         for (long j = start; j < finish; j++){
             temp_res[j][0] = j;
             temp_res[j][1] = masses[j];
@@ -318,15 +316,11 @@ void* simulate(void* rank)
             temp_res[j][5] = velocities[j].y;
         }
         
-        pthread_mutex_lock(&mutex);
+        pthread_mutex_lock(&mutex_mini);
         ++n_finished;
-        pthread_mutex_unlock(&mutex);
-
-
-        printf("THREAD %ld: sem_value %d | \n", thread_n, sval);
+        pthread_mutex_unlock(&mutex_mini);
 
         if (n_finished == thread_count){
-            printf("Грустный уставший поток %ld :((\n", thread_n);
 
             FILE *fp = fopen(output_filename, "a");
             if (fp == NULL){
@@ -352,36 +346,21 @@ void* simulate(void* rank)
                     printf("Wrong semaphore value check!!!\n");
                     return NULL;
                 }
-                if (sval == 0){
-                    sem_getvalue(&sems[j], &sval);
-                    printf("SEM_VALUE_BEFORE_POST: %d\n", sval);
+                if (j != thread_n){
 
                     sem_post(&sems[j]);
-                    sem_getvalue(&sems[j], &sval);
-                    printf("SEM_VALUE_AFTER_POST: %d\n", sval);
                 }
             }
             n_finished = 0;
 
-                                
-            for (long j = 0; j < thread_count; j++){
-                sem_getvalue(&sems[j], &sval);
-            }
-            printf("\n");  
         }
         else{
-                sem_getvalue(&sems[thread_n], &sval);
-                printf("THREAD %ld: SEM_VALUE_BEFORE_WAIT: %d\n", thread_n, sval);
 
-                sem_wait(&sems[thread_n]);
-                sem_getvalue(&sems[thread_n], &sval);
-                printf("THREAD %ld: SEM_VALUE_AFTER_WAIT: %d\n", thread_n, sval);
+            sem_wait(&sems[thread_n]);
         }   
 
 
     }
-
-    printf("FINISHED ROUTINE! %ld\n", (long)rank);
 
     return NULL;
 }
@@ -392,7 +371,6 @@ double make_single_run(int n_threads, char* input_file, char* output_file)
     output_filename = output_file;
     thread_count = n_threads;
 
-    printf("IN SINGLE RUN...\n");
     double start, end, overall_time = 0.0; 
 
     if (initiateSystem(input_file)){
@@ -409,12 +387,16 @@ double make_single_run(int n_threads, char* input_file, char* output_file)
 
     fclose(fp);
 
+    GET_TIME(start);
     for (long i = 0; i < thread_count; ++i ) {
         pthread_create(&thread_handles[i], NULL, simulate, (void*) i);
     }
     for (long i = 0; i < thread_count; ++i) {
         pthread_join(thread_handles[i], NULL);
     } 
+    GET_TIME(end);
+
+    overall_time += end - start;
 
     removeSystem();
 

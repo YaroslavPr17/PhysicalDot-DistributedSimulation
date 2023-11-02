@@ -351,7 +351,6 @@ double make_single_run(int n_threads, char* input_file, char* output_file)
     {   
         GET_TIME(start);
         simulate();
-        GET_TIME(end);
 
         for (long j = 0; j < bodies; j++)
             fprintf(fp, "%ld,%lf,%lf,%lf,%lf,%lf\n", 
@@ -363,6 +362,7 @@ double make_single_run(int n_threads, char* input_file, char* output_file)
                 velocities[j].y
             );
 
+        GET_TIME(end);
         overall_time += end - start;        
     }
 
