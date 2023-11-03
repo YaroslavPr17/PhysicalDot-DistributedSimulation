@@ -9,20 +9,21 @@ int main(int argc, char** argv) {
     long n_retries;
     long n_bodies;
     int n_threads;
-    char* HT;
+    char *HT, *src;
 
-    if (argc < 4){
-        printf("Usage : %s <thread_count> <bodies_count> <HT True/False> <retries_count>", argv[0]);
+    if (argc < 5){
+        printf("Usage : %s <thread_count> <bodies_count> <HT True/False> <src_name.cpp> <retries_count>", argv[0]);
         return 0;
     }
     
-    if (argc == 5){
+    if (argc == 6){
         n_threads = strtol(argv[1], NULL, 10);
         n_bodies = strtol(argv[2], NULL, 10);
         HT = argv[3];
-        n_retries = strtol(argv[4], NULL, 10);
+        src = argv[4];
+        n_retries = strtol(argv[5], NULL, 10);
     }
-    else if(argc == 4){
+    else if(argc == 5){
         printf("Not implemented yet\n");
         return 0;
 
@@ -38,25 +39,29 @@ int main(int argc, char** argv) {
         
     char file_in[128] = "./data/input/gen_input%ld.txt";
     char file_out[128] = "./data/output/gen_output%ld.csv";
+    char metrics_filename[128] = "./experiments/bodies/exp_data.%s.txt";
     char fin[128];
     char fout[128];
+    char fmetr[128];
 
     sprintf(fin, file_in, n_bodies);
     sprintf(fout, file_out, n_bodies);
+    sprintf(fmetr, metrics_filename, src);
 
     printf("---> Input file: %s\n", fin);
     printf("---> Output file: %s\n", fout);
 
     printf("---> Testing %ld bodies on %d threads for %ld retries.\n", n_bodies, n_threads, n_retries);
 
-    char metrics_filename[128] = "./experiments/bodies/exp_data.txt";
-    FILE *metr_file = fopen(metrics_filename, "a");
+    printf("---> Metrics file: %s\n", fmetr);
+    FILE *metr_file = fopen(fmetr, "a");
 
     double sum_exec_time = 0;
 
-    printf("RETRY ");
+    printf("Retries ");
     for (long i = 0; i < n_retries; ++i){
-        printf("#%ld ", i);
+        printf("%ld ", i + 1);
+        fflush(stdout);
         sum_exec_time += make_single_run(n_threads, fin, fout);
     }
     printf("\n");
