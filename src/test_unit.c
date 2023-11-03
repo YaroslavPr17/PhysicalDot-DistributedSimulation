@@ -54,9 +54,12 @@ int main(int argc, char** argv) {
 
     double sum_exec_time = 0;
 
+    printf("RETRY ");
     for (long i = 0; i < n_retries; ++i){
+        printf("#%ld ", i);
         sum_exec_time += make_single_run(n_threads, fin, fout);
     }
+    printf("\n");
     
     printf("---> Mean execution time over %ld retries = %4.12lf s.\n", n_retries, sum_exec_time / n_retries);
     fprintf(metr_file, "%ld,%d,%ld,%4.12lf,%s\n", n_bodies, n_threads, n_retries, sum_exec_time / n_retries, HT);

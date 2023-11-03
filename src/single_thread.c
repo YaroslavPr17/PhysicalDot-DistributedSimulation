@@ -73,21 +73,6 @@ void initiateSystem(char *fileName)
     fclose(fp);
 }
 
-void resolveCollisions()
-{
-    long i, j;
-
-    for (i = 0; i < bodies - 1; i++)
-        for (j = i + 1; j < bodies; j++)
-        {
-            if (positions[i].x == positions[j].x && positions[i].y == positions[j].y)
-            {
-                vector temp = velocities[i];
-                velocities[i] = velocities[j];
-                velocities[j] = temp;
-            }
-        }
-}
 
 void computeAccelerations()
 {

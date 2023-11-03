@@ -100,23 +100,6 @@ void removeSystem()
     free(acc_table);
 }
 
-void resolveCollisions()
-{
-    long i, j;
-
-    for (i = 0; i < bodies - 1; i++)
-        for (j = i + 1; j < bodies; j++)
-        {
-            if ((fabs(positions[i].x - positions[j].x) < EPS) && (fabs(positions[i].y - positions[j].y) < EPS))
-            {
-                vector temp = velocities[i];
-                velocities[i] = velocities[j];
-                velocities[j] = temp;
-            }
-        }
-}
-
-
 // ACCELERATIONS ==============================================================================
 
 
@@ -326,7 +309,6 @@ void simulate()
     computeAccelerationsMultiSum();
     computePositionsMulti();
     computeVelocitiesMulti();
-    resolveCollisions();
 }
 
 double make_single_run(int n_threads, char* input_file, char* output_file)

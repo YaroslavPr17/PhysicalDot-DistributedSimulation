@@ -36,7 +36,7 @@ sem_t* sems;
 int sval;
 int n_finished = 0;
 
-pthread_mutex_t mutex_mini;
+pthread_mutex_t mutex1, mutex2;
 
 
 
@@ -113,7 +113,10 @@ int initiateSystem(char *fileName)
         sem_init(&sems[i], 0, 0);
     }
 
-    pthread_mutex_init (&mutex_mini, NULL);
+    thread_handles = (void*)malloc(thread_count * sizeof(pthread_t));
+
+    pthread_mutex_init (&mutex1, NULL);
+    pthread_mutex_init (&mutex2, NULL);
 
     for (i = 0; i < bodies; i++)
     {
@@ -137,22 +140,13 @@ void removeSystem()
         free(acc_table[i]);
     }
     free(acc_table);
-}
 
-void resolveCollisions()
-{
-    long i, j;
+    for (int i = 0; i < thread_count; ++i){
+        sem_destroy(&sems[i]);
+    }
+    free(sems);
 
-    for (i = 0; i < bodies - 1; i++)
-        for (j = i + 1; j < bodies; j++)
-        {
-            if ((fabs(positions[i].x - positions[j].x) < EPS) && (fabs(positions[i].y - positions[j].y) < EPS))
-            {
-                vector temp = velocities[i];
-                velocities[i] = velocities[j];
-                velocities[j] = temp;
-            }
-        }
+    free(thread_handles);
 }
 
 
@@ -160,6 +154,8 @@ void resolveCollisions()
 
 
 void* computeAccelerationsRoutine(void* rank){
+    // printf("computeAccelerationsRoutine\n");
+
     long thread_n = (long) rank;
     long batch_size = bodies / thread_count;
     long start = batch_size * thread_n;
@@ -196,6 +192,8 @@ void* computeAccelerationsRoutine(void* rank){
 
 
 void* sumAccelerationsRoutine(void* rank){
+    // printf("sumAccelerationsRoutine\n");
+    
     long thread_n = (long) rank;
     long batch_size = bodies / thread_count;
     long start = batch_size * thread_n;
@@ -231,6 +229,7 @@ void* computeAccelerationsMultiSum(void* rank){
 // VELOCITIES ==============================================================================
 
 void* computeVelocitiesRoutine(void* rank){
+    // printf("computeVelocitiesRoutine\n");
     long thread_n = (long) rank;
     long batch_size = bodies / thread_count;
     long start = batch_size * thread_n;
@@ -261,6 +260,7 @@ void* computeVelocitiesMulti(void* rank)
 // POSITIONS ==============================================================================
 
 void* computePositionsRoutine(void* rank){
+    // printf("computePositionsRoutine\n");
     long thread_n = (long) rank;
     long batch_size = bodies / thread_count;
     long start = batch_size * thread_n;
@@ -295,16 +295,22 @@ void* simulate(void* rank)
 {
     for (int i = 0; i < timeSteps; i++)
     {
+        // printf("STEP %d\n", i);
+
         long thread_n = (long) rank;
         long batch_size = bodies / thread_count;
         long start = batch_size * thread_n;
         long finish = start + batch_size;    
 
+        // printf("BEFORE ACCRATION.\n");
         computeAccelerationsMultiSum(rank);
+
+        // printf("BEFORE POSITIONS.\n");
         computePositionsMulti(rank);
+
+        // printf("BEFORE VELOCITIES.\n");
         computeVelocitiesMulti(rank);
         // resolveCollisions();
-
 
 
         for (long j = start; j < finish; j++){
@@ -316,11 +322,17 @@ void* simulate(void* rank)
             temp_res[j][5] = velocities[j].y;
         }
         
-        pthread_mutex_lock(&mutex_mini);
+        // printf("Thread %ld. N finished %d\n", thread_n, n_finished);
+
+        pthread_mutex_lock(&mutex1);
         ++n_finished;
-        pthread_mutex_unlock(&mutex_mini);
+
+        // printf("Thread %ld. N finished %d\n", thread_n, n_finished);
 
         if (n_finished == thread_count){
+            // printf("In IF\n");
+
+            n_finished = 0;
 
             FILE *fp = fopen(output_filename, "a");
             if (fp == NULL){
@@ -340,6 +352,8 @@ void* simulate(void* rank)
             }
         
             fclose(fp);
+
+            // printf("Thread %ld, Before sems up\n", thread_n);
             
             for (int j = 0; j < thread_count; ++j){
                 if (sem_getvalue(&sems[j], &sval)){
@@ -349,16 +363,19 @@ void* simulate(void* rank)
                 if (j != thread_n){
 
                     sem_post(&sems[j]);
+
                 }
             }
-            n_finished = 0;
+            // printf("Thread %ld, After sems up\n", thread_n);
 
+            pthread_mutex_unlock(&mutex1);
         }
-        else{
-
+        else
+        {
+            // printf("NOT In IF\n");
+            pthread_mutex_unlock(&mutex1);
             sem_wait(&sems[thread_n]);
-        }   
-
+        } 
 
     }
 
@@ -367,7 +384,7 @@ void* simulate(void* rank)
 
 double make_single_run(int n_threads, char* input_file, char* output_file)
 {
-    thread_handles = (void*)malloc(thread_count * sizeof(pthread_t));
+    // printf("MAKING SINGLE RUN.\n");
     output_filename = output_file;
     thread_count = n_threads;
 
@@ -386,6 +403,8 @@ double make_single_run(int n_threads, char* input_file, char* output_file)
     fprintf(fp, "Body,mass,x,y,vx,vy\n");
 
     fclose(fp);
+
+    // printf("THREADS STARTED.\n");
 
     GET_TIME(start);
     for (long i = 0; i < thread_count; ++i ) {
