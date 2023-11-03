@@ -2,6 +2,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
+
+
+double generate_random_sign(){
+    return pow(-1, (double)(rand() % 10));
+}
+
 
 int main(int argc, char** argv){    
     srand(time(NULL));   // Initialization, should only be called once.
@@ -33,8 +40,8 @@ int main(int argc, char** argv){
         int val = rand() % 200 + 50;
         fprintf(fp, "%d\n", val);
 
-        fprintf(fp, "%d %d\n", rand() % 100, rand() % 100);
-        fprintf(fp, "%d %d\n", rand() % 50 + 50, rand() % 50 + 50);
+        fprintf(fp, "%lf %lf\n", rand() % 100 * generate_random_sign(), rand() % 100 * generate_random_sign());
+        fprintf(fp, "%lf %lf\n", (rand() % 50 + 50) * generate_random_sign(), (rand() % 50 + 50 * generate_random_sign()));
     }
 
     return 0;
