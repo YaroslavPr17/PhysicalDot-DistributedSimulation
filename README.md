@@ -24,11 +24,22 @@
 
 ![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/1e7dbdd6-3643-4749-9a6e-a6e9e984105a)
 
-## Полученные
- решения
-Было получено несколько решений [итеративное](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/blob/development/src/single_thread.c), [параллельное с пересозданием потоков](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/blob/development/src/multi_thread_repeated_threading.c), [параллеьлное без пересоздания потоков](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/blob/development/src/multi_thread.c),  также была создана визуализация и проведены исследования скорости выполнения различных решений
+## Полученные решения
+Было получено несколько решений [итеративное](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/blob/development/src/single_thread.c), [параллельное с пересозданием потоков](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/blob/development/src/multi_thread_repeated_threading.c), [параллельное без пересоздания потоков](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/blob/development/src/multi_thread.c),  также была создана визуализация и проведены исследования скорости выполнения различных решений
 ## Визуализация
 
 https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/f19f1a3b-20e1-416e-88f0-202c3372bc44
+
+## Измерения времени
+### Параллельное решение без пересоздания потоков
+![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/38ef8180-e8b1-4399-8b55-cf006e5223b8)
+
+![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/e7e37548-2825-4798-be9c-63b1ca556812)
+
+### Параллельное решение с пересозданием потоков
+
+![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/dfdf11a2-7ebc-4395-84f0-4609365da990)
+
+![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/47cee8c6-43ed-4168-b031-a2f96655dd43)
 
 
