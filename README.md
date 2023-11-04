@@ -28,5 +28,7 @@
  решения
 Было получено несколько решений [итеративное](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/blob/development/src/single_thread.c), [параллельное с пересозданием потоков](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/blob/development/src/multi_thread_repeated_threading.c), [параллеьлное без пересоздания потоков](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/blob/development/src/multi_thread.c),  также была создана визуализация и проведены исследования скорости выполнения различных решений
 ## Визуализация
-![vis4](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/77558720-f343-43ba-94f5-fdfc225de8d4)
+
+https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/f19f1a3b-20e1-416e-88f0-202c3372bc44
+
 
