@@ -11,7 +11,7 @@ double generate_random_sign(){
 
 
 int main(int argc, char** argv){    
-    srand(time(NULL));   // Initialization, should only be called once.
+    srand(time(NULL));
 
     const double GRAV_CONST = 6.6743e-11;
 
