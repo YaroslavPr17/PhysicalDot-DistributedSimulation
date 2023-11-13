@@ -8,15 +8,16 @@
 #include "multi_thread.h"
 #include "timer.h"
 
-
 #define DT 0.05
 #define EPS 10e-32
 #define VEC_LEN_EPS 10e-6
+
 
 typedef struct
 {
     double x, y;
 } vector;
+
 
 int bodies, timeSteps;
 double *masses, GravConstant;
@@ -26,13 +27,13 @@ vector *positions, *velocities, *accelerations;
 int thread_count = 0;
 
 
-
 vector addVectors(vector a, vector b)
 {
     vector c = {a.x + b.x, a.y + b.y};
 
     return c;
 }
+
 
 vector scaleVector(double b, vector a)
 {
@@ -41,6 +42,7 @@ vector scaleVector(double b, vector a)
     return c;
 }
 
+
 vector subtractVectors(vector a, vector b)
 {
     vector c = {a.x - b.x, a.y - b.y};
@@ -48,10 +50,12 @@ vector subtractVectors(vector a, vector b)
     return c;
 }
 
+
 double mod(vector a)
 {
     return sqrt(a.x * a.x + a.y * a.y);
 }
+
 
 int initiateSystem(char *fileName)
 {
@@ -87,6 +91,7 @@ int initiateSystem(char *fileName)
     return 0;
 }
 
+
 void removeSystem()
 {
     free(masses);
@@ -100,8 +105,8 @@ void removeSystem()
     free(acc_table);
 }
 
-// ACCELERATIONS ==============================================================================
 
+// ACCELERATIONS ==============================================================================
 
 void* computeAccelerationsRoutine(void* rank){
     long thread_n = (long) rank;
@@ -139,11 +144,11 @@ void* computeAccelerationsRoutine(void* rank){
 }
 
 
-void computeAccelerations(){
+void computeAccelerationsSingleThread(){
     pthread_t* thread_handles = NULL;
     thread_handles = malloc(thread_count * sizeof(pthread_t));
     
-    for (long i = 0; i < thread_count; ++i ) {
+    for (long i = 0; i < thread_count; ++i) {
         pthread_create(&thread_handles[i], NULL, computeAccelerationsRoutine, (void*) i);
     }
     for (long i = 0; i < thread_count; ++i) {
@@ -187,7 +192,6 @@ void* sumAccelerationsRoutine(void* rank){
 
     return NULL;
 }
-
 
 
 void computeAccelerationsMultiSum(){
@@ -250,11 +254,10 @@ void computeVelocitiesMulti()
     free(thread_handles);
 }
 
-void computeVelocitiesSingle()
-{
-    int i;
 
-    for (i = 0; i < bodies; i++)
+void computeVelocitiesSingleThread()
+{
+    for (int i = 0; i < bodies; i++)
         velocities[i] = addVectors(
             velocities[i], 
             scaleVector(DT, accelerations[i])
@@ -264,14 +267,13 @@ void computeVelocitiesSingle()
 
 // POSITIONS ==============================================================================
 
-
 void* computePositionsRoutine(void* rank){
     long thread_n = (long) rank;
     long batch_size = bodies / thread_count;
     long start = batch_size * thread_n;
     long finish = start + batch_size;    
 
-    long i, j;
+    long i;
 
     for (i = start; i < finish; i++)
     {    
@@ -281,13 +283,13 @@ void* computePositionsRoutine(void* rank){
     return NULL;
 }
 
-void computePositionsSingle()
-{
-    int i;
 
-    for (i = 0; i < bodies; i++)
+void computePositionsSingleThread()
+{
+    for (int i = 0; i < bodies; i++)
         positions[i] = addVectors(positions[i], scaleVector(DT, velocities[i]));
 }
+
 
 void computePositionsMulti()
 {
@@ -304,12 +306,14 @@ void computePositionsMulti()
     free(thread_handles);
 }
 
+
 void simulate()
 {
     computeAccelerationsMultiSum();
     computePositionsMulti();
     computeVelocitiesMulti();
 }
+
 
 double make_single_run(int n_threads, char* input_file, char* output_file)
 {
