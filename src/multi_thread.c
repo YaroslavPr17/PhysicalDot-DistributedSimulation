@@ -9,11 +9,11 @@
 #include "multi_thread.h"
 #include "timer.h"
 
-
 #define DT 0.05
 #define EPS 10e-32
 #define VEC_LEN_EPS 10e-6
 #define OUT_FEATURE_COUNT 6
+
 
 typedef struct
 {
@@ -24,10 +24,9 @@ int bodies, timeSteps;
 double *masses, GravConstant;
 vector **acc_table;
 vector *positions, *velocities, *accelerations;
+double **temp_res;
 
 char* output_filename;
-
-double **temp_res;
 
 int thread_count = 0;
 pthread_t* thread_handles = NULL;
@@ -36,9 +35,7 @@ sem_t* sems;
 int sval;
 int n_finished = 0;
 
-pthread_mutex_t mutex1, mutex2;
-
-
+pthread_mutex_t mutex;
 
 
 // INITIALIZATION ==============================================================================
@@ -50,12 +47,14 @@ vector addVectors(vector a, vector b)
     return c;
 }
 
+
 vector scaleVector(double b, vector a)
 {
     vector c = {b * a.x, b * a.y};
 
     return c;
 }
+
 
 vector subtractVectors(vector a, vector b)
 {
@@ -64,21 +63,12 @@ vector subtractVectors(vector a, vector b)
     return c;
 }
 
+
 double mod(vector a)
 {
     return sqrt(a.x * a.x + a.y * a.y);
 }
 
-// void initThreads(){
-//     thread_handles = (void*)malloc(thread_count * sizeof(pthread_t));
-
-//     for (long i = 0; i < thread_count; ++i ) {
-//         pthread_create(&thread_handles[i], NULL, simulate, (void*) i);
-//     }
-//     for (long i = 0; i < thread_count; ++i) {
-//         pthread_join(thread_handles[i], NULL);
-//     }
-// }
 
 int initiateSystem(char *fileName)
 {
@@ -115,8 +105,7 @@ int initiateSystem(char *fileName)
 
     thread_handles = (void*)malloc(thread_count * sizeof(pthread_t));
 
-    pthread_mutex_init (&mutex1, NULL);
-    pthread_mutex_init (&mutex2, NULL);
+    pthread_mutex_init (&mutex, NULL);
 
     for (i = 0; i < bodies; i++)
     {
@@ -128,6 +117,7 @@ int initiateSystem(char *fileName)
     fclose(fp);
     return 0;
 }
+
 
 void removeSystem()
 {
@@ -152,9 +142,7 @@ void removeSystem()
 
 // ACCELERATIONS ==============================================================================
 
-
 void* computeAccelerationsRoutine(void* rank){
-    // printf("computeAccelerationsRoutine\n");
 
     long thread_n = (long) rank;
     long batch_size = bodies / thread_count;
@@ -192,7 +180,6 @@ void* computeAccelerationsRoutine(void* rank){
 
 
 void* sumAccelerationsRoutine(void* rank){
-    // printf("sumAccelerationsRoutine\n");
     
     long thread_n = (long) rank;
     long batch_size = bodies / thread_count;
@@ -229,7 +216,6 @@ void* computeAccelerationsMultiSum(void* rank){
 // VELOCITIES ==============================================================================
 
 void* computeVelocitiesRoutine(void* rank){
-    // printf("computeVelocitiesRoutine\n");
     long thread_n = (long) rank;
     long batch_size = bodies / thread_count;
     long start = batch_size * thread_n;
@@ -260,7 +246,6 @@ void* computeVelocitiesMulti(void* rank)
 // POSITIONS ==============================================================================
 
 void* computePositionsRoutine(void* rank){
-    // printf("computePositionsRoutine\n");
     long thread_n = (long) rank;
     long batch_size = bodies / thread_count;
     long start = batch_size * thread_n;
@@ -287,31 +272,21 @@ void* computePositionsMulti(void* rank)
 }
 
 
-
 // OUT_CALL ==============================================================================
-
 
 void* simulate(void* rank)
 {
     for (int i = 0; i < timeSteps; i++)
     {
-        // printf("STEP %d\n", i);
 
         long thread_n = (long) rank;
         long batch_size = bodies / thread_count;
         long start = batch_size * thread_n;
         long finish = start + batch_size;    
 
-        // printf("BEFORE ACCRATION.\n");
         computeAccelerationsMultiSum(rank);
-
-        // printf("BEFORE POSITIONS.\n");
         computePositionsMulti(rank);
-
-        // printf("BEFORE VELOCITIES.\n");
         computeVelocitiesMulti(rank);
-        // resolveCollisions();
-
 
         for (long j = start; j < finish; j++){
             temp_res[j][0] = j;
@@ -321,16 +296,11 @@ void* simulate(void* rank)
             temp_res[j][4] = velocities[j].x;
             temp_res[j][5] = velocities[j].y;
         }
-        
-        // printf("Thread %ld. N finished %d\n", thread_n, n_finished);
 
-        pthread_mutex_lock(&mutex1);
+        pthread_mutex_lock(&mutex);
         ++n_finished;
 
-        // printf("Thread %ld. N finished %d\n", thread_n, n_finished);
-
         if (n_finished == thread_count){
-            // printf("In IF\n");
 
             n_finished = 0;
 
@@ -352,8 +322,6 @@ void* simulate(void* rank)
             }
         
             fclose(fp);
-
-            // printf("Thread %ld, Before sems up\n", thread_n);
             
             for (int j = 0; j < thread_count; ++j){
                 if (sem_getvalue(&sems[j], &sval)){
@@ -366,14 +334,12 @@ void* simulate(void* rank)
 
                 }
             }
-            // printf("Thread %ld, After sems up\n", thread_n);
 
-            pthread_mutex_unlock(&mutex1);
+            pthread_mutex_unlock(&mutex);
         }
         else
         {
-            // printf("NOT In IF\n");
-            pthread_mutex_unlock(&mutex1);
+            pthread_mutex_unlock(&mutex);
             sem_wait(&sems[thread_n]);
         } 
 
@@ -384,7 +350,6 @@ void* simulate(void* rank)
 
 double make_single_run(int n_threads, char* input_file, char* output_file)
 {
-    // printf("MAKING SINGLE RUN.\n");
     output_filename = output_file;
     thread_count = n_threads;
 
@@ -404,7 +369,6 @@ double make_single_run(int n_threads, char* input_file, char* output_file)
 
     fclose(fp);
 
-    // printf("THREADS STARTED.\n");
 
     GET_TIME(start);
     for (long i = 0; i < thread_count; ++i ) {
