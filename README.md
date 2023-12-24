@@ -32,46 +32,20 @@
 
 https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/f3a72597-3e3a-4746-8e49-bc21bbb6d704
 
-## Измерения времени
+## Metrics investigation
 
-### Параллельное решение без пересоздания потоков
+### *Computation time*
+![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77925460/f4233be0-a2a7-434b-96d2-7238cbe6cd69)
 
-![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/7a7f1749-0c52-4b7d-8ccd-137254dfbbf8)
+![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77925460/933df1e0-9afb-4579-808a-640adf5561e6)
 
-![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/122f34f2-a0e3-4656-a655-9913e6388173)
+### *Speed Up*
+![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77925460/51a281eb-6231-43a0-b2c0-fdee49efd2cd)
 
-### Параллельное решение с пересозданием потоков
-![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/3a073b6e-ee60-4b9c-ac73-9bc89b31d82b)
+![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77925460/b2afa6eb-148d-4a46-8225-8e32b454c13b)
 
-![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/ff457fd9-d779-48a3-b9f8-1f7c463a7a2e)
+### *Efficiency*
+![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77925460/92cf44e8-0042-4b07-94d3-1ff6bad08631)
 
-## Измерения ускорения
-
-### Параллельное решение без пересоздания потоков
-
-![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/71726a9b-c8f0-4d72-a19f-acda1ca319cb)
-
-![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/f29ad1de-a081-4eff-8568-b1be1e9b758c)
-
-### Параллельное решение с пересозданием потоков
-
-![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/a44bf85f-0065-4e08-b0de-da548f86e799)
-
-![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/c40e69a2-73e6-4d6c-95e0-40f96c6bfa03)
-
-## Измерения эффективности
-
-### Параллельное решение без пересоздания потоков
-
-![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/b2cde11d-9d7a-4dab-90b6-cccb4c416baa)
-
-![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/030a0aec-fd99-4be0-8f86-a4d36e61eb2c)
-
-### Параллельное решение с пересозданием потоков
-
-![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/39784df7-478a-4be7-8f3a-209bdef21a7c)
-
-![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/9e3dd7ff-fa95-49ae-8baf-047b25f5727d)
-
-
+![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77925460/18019ea5-2783-4143-9252-28015b56cf45)
 
