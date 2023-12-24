@@ -1,11 +1,18 @@
+# Compiling algorithm file
 gcc src/multi_thread.c -o ./out/multi_run -lm
+
+# Running algorithm
 ./out/multi_run 1 ./data/input/input4 ./data/output/output4
 
+# Compiling and running the generator
 gcc src/generator.c -o ./out/gen_run -lm; ./out/gen_run 10 20
 
-./data/output/gen_output30.csv
+# Running different algorithms
+gcc src/multi_thread.c -lm src/test_unit.c -o ./out/test_unit_run; ./out/test_unit_run 4 100 True multi_thread 1
+gcc src/single_thread.c -lm src/test_unit.c -o ./out/test_unit_run; ./out/test_unit_run 4 100 True multi_thread 1
 
-gcc src/multi_thread.c -lm src/test_unit.c -o ./out/test_unit_run; ./out/test_unit_run 4 100 True 1
-gcc src/single_thread.c -lm src/test_unit.c -o ./out/test_unit_run; ./out/test_unit_run 4 100 True 1
+# Run video-visualisation
+python ./Python/visualisation.py
 
-
+# Run test-script
+./test.sh 120 2401 120 multi_thread False
