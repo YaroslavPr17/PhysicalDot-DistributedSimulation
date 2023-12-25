@@ -25,8 +25,13 @@ has the following format:
 
 ![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/153b2fc6-42f6-4c5b-bab3-e3be840296f2)
 
+## Computer configuration
+* **CPU**: Intel(R) Core(TM) i5-10400F CPU @ 2.90GHz 2.90 GHz. | Cores: 6 | Hyper Threading
+* **RAM**: 32.0 GB
+* **OS**: Ubuntu 22.04.3 LTS
+
 ## Received solutions
-Several solutions have been obtained [iterative](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/blob/development/src/single_thread.c), [parallel with the threads assignment](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/blob/development/src/multi_thread_repeated_threading.c) , [parallel without threads assignment](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/blob/development/src/multi_thread.c) Visualization was also created, studies of the speed of execution of various solutions were conducted and characteristics were measured, such as *acceleration* and *efficiency*.
+Several solutions have been obtained [iterative](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/blob/development/src/single_thread.c) , [parallel with threads reassignment](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/blob/development/src/multi_thread_repeated_threading.c) , [parallel without threads reassignment](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/blob/development/src/multi_thread.c) Visualization was also created, studies of the speed of execution of various solutions were conducted and numerical characteristics were measured, such as *acceleration* and *efficiency*.
 
 ## Visualization
 
@@ -48,3 +53,10 @@ https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/7774403
 ![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77925460/92cf44e8-0042-4b07-94d3-1ff6bad08631)
 
 ![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77925460/18019ea5-2783-4143-9252-28015b56cf45)
+
+## Conclusions on working with multithreading
+* The minimum execution time is achieved with the largest number of program threads;
+* Threads, the number of which is many times higher than the number of processor cores, make a minimal contribution to the acceleration of calculations;
+* For a large number of threads, there is an obvious overhead in time;
+* Hyper Threading technology allows you to increase computing performance by 33% (with 12 active system threads instead of 6);
+* After a certain threshold, the efficiency remains unchanged as the amount of data increases.
