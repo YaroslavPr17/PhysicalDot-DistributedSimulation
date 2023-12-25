@@ -25,6 +25,11 @@
 
 ![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77744037/153b2fc6-42f6-4c5b-bab3-e3be840296f2)
 
+## Конфигурация вычислительной машины
+* **CPU**: Intel(R) Core(TM) i5-10400F CPU @ 2.90GHz   2.90 GHz. | Cores: 6 | Hyper Threading
+* **RAM**: 32,0 ГБ
+* **OS**: Ubuntu 22.04.3 LTS
+
 ## Полученные решения
 Было получено несколько решений [итеративное](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/blob/development/src/single_thread.c), [параллельное с пересозданием потоков](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/blob/development/src/multi_thread_repeated_threading.c), [параллельное без пересоздания потоков](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/blob/development/src/multi_thread.c), также была создана визуализация, проведены исследования скорости выполнения различных решений и измерены характеристики, такие как *ускорение* и *эффективность*.
 
@@ -49,3 +54,9 @@ https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/7774403
 
 ![image](https://github.com/YaroslavPr17/PhysicalDot-DistributedSimulation/assets/77925460/18019ea5-2783-4143-9252-28015b56cf45)
 
+## Выводы по работе с многопоточностью
+* Минимальное время работы программы достигается при наибольшем количестве программных потоков;
+* Потоки, число которых многократно превышает количество ядер процессора вносят минимальный вклад в ускорение вычислений;
+* Для большого количества потоков наблюдается очевидный "overhead" по времени;
+* Технология Hyper Threading позволяет увеличить производительность вычислений на 33% (при 12 активных системных потоках вместо 6);
+* После некоторого порога эффективность остаётся неизменной с ростом количества данных.
